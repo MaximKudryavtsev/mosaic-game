@@ -14,7 +14,9 @@ function init() {
     const playground = document.getElementById("playground");
     const result = document.getElementById("result");
     const imagesContainer = document.getElementById("images");
-    if (backlog && playground && result && imagesContainer) {
+    const sideSizeInput = document.getElementById("sideSize") as HTMLInputElement;
+    const submit = document.getElementById("submit");
+    if (backlog && playground && result && imagesContainer && submit) {
         const images = new Images(imagesContainer, imagesSrc);
         const game = new Game({
             sideSize: 5,
@@ -24,9 +26,13 @@ function init() {
             imageSrc: images.getCurrentSrc()
         })
         game.start();
-        images.subscribeListeners(src => game.restart(src));
+        images.subscribeListeners(src => game.restart({
+            imageSrc: src
+        }));
+        submit.onclick = () => game.restart({
+            sideSize: Number(sideSizeInput.value)
+        })
     }
 }
-
 
 init();

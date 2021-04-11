@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
+    <div class="wrapper">
         <div id="playground" class="play-ground">
             <div class="result block" id="result"></div>
             <div class="result block" id="start">
@@ -14,7 +14,11 @@
             </div>
         </div>
         <div class="images" id="images"></div>
-        <button id="click">click</button>
+        <label for="sideSize">
+            Введит размер сетки
+            <input type="number" value="5" id="sideSize" />
+            <button id="submit">Применить</button>
+        </label>
     </div>
 <script src="bundle.js"></script>
 </body>

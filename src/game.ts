@@ -12,7 +12,7 @@ interface GameOptions {
 
 export class Game {
     private puzzles: Puzzle[] = [];
-    private readonly options: GameOptions = {
+    private options: GameOptions = {
         containers: {
             backlog: null,
             playground: null,
@@ -33,9 +33,12 @@ export class Game {
         this.subscribeMovementListeners();
     }
 
-    restart(newSrc: string) {
+    restart(options: Partial<GameOptions>) {
         this.clear();
-        this.options.imageSrc = newSrc;
+        this.options = {
+            ...this.options,
+            ...options
+        };
         this.start();
     }
 
