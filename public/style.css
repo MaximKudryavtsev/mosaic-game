@@ -3,16 +3,44 @@
     padding: 0;
 }
 
+.images {
+    width: 1200px;
+    height: 100%;
+    padding: 10px;
+    overflow-x: auto;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    margin: 20px auto;
+}
+
+.image {
+    width: 200px;
+    height: 200px;
+    margin-right: 30px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    transform: scale(1);
+}
+
+.image:hover {
+    transform: scale(1.1);
+}
+
+.image-active {
+    border: 2px solid green;
+}
+
+.image:last-child {
+    margin-right: 0;
+}
+
 .play-ground {
-    width: 800px;
+    width: 1200px;
     margin: 0 auto;
     overflow: hidden;
     position: relative;
-}
-
-.details {
-    width: 800px;
-    height: 600px;
+    display: flex;
 }
 
 .result {
@@ -25,11 +53,9 @@
     display: grid;
     box-sizing: border-box;
     position: relative;
-    margin: 0 auto;
 }
 
 .item {
-    background-image: url("image.jpg");
     background-repeat: no-repeat;
     background-size: 600px 400px;
     z-index: 5;

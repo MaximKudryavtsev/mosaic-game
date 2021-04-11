@@ -1,30 +1,71 @@
 import { Puzzle } from "./Puzzle";
 
+interface GameOptions {
+    containers: {
+        playground: HTMLElement;
+        backlog: HTMLElement;
+        result: HTMLElement;
+    };
+    sideSize: number;
+    imageSrc: string;
+}
+
 export class Game {
     private puzzles: Puzzle[] = [];
+    private readonly options: GameOptions = {
+        containers: {
+            backlog: null,
+            playground: null,
+            result: null
+        },
+        sideSize: 0,
+        imageSrc: ''
+    }
 
-    constructor(container: HTMLElement, sideSize: number) {
+    constructor(options: GameOptions) {
+        this.options = options;
+    }
+
+    start() {
+        this.createGrid();
+        this.shufflePuzzles();
+        this.appendPuzzles();
+        this.subscribeMovementListeners();
+    }
+
+    restart(newSrc: string) {
+        this.clear();
+        this.options.imageSrc = newSrc;
+        this.start();
+    }
+
+    private clear(): void {
+        this.puzzles.forEach((item) => item.removeCell());
+        this.puzzles = [];
+    }
+
+    private createGrid(): void {
         let position = 0;
 
-        for (let i = 0; i < sideSize; i++) {
-            for (let j = 0; j < sideSize; j++) {
-                const puzzle = new Puzzle(container, sideSize, position);
+        for (let i = 0; i < this.options.sideSize; i++) {
+            for (let j = 0; j < this.options.sideSize; j++) {
+                const puzzle = new Puzzle({
+                    container: this.options.containers.backlog,
+                    sideSize: this.options.sideSize,
+                    position,
+                    imageSrc: this.options.imageSrc
+                });
                 this.puzzles.push(puzzle);
                 position++;
             }
         }
-        this.shufflePuzzles();
-        this.appendPuzzles(container, sideSize);
     }
 
-    start() {
-        this.listenMove();
-    }
-
-    private appendPuzzles(container: HTMLElement, sideSize: number): void {
-        container.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
+    private appendPuzzles(): void {
+        const {containers, sideSize} = this.options;
+        containers.backlog.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
         this.puzzles.forEach((item) => {
-            container.appendChild(item.getElement())
+            containers.backlog.appendChild(item.getElement())
         })
     }
 
@@ -39,32 +80,30 @@ export class Game {
         }
     }
 
-    private listenMove() {
-        const playGround = document.getElementById("playground");
+    private subscribeMovementListeners() {
+        const {playground, result} = this.options.containers;
         this.puzzles.forEach((puzzle) => {
                 puzzle.getPuzzleElement().onmousedown = () => {
                     if (puzzle.getPuzzleElement().draggable) {
                         puzzle.getPuzzleElement().style.position = 'absolute';
                         puzzle.getPuzzleElement().style.zIndex = '10';
-
-                        playGround.onmousemove = (e) => {
+                        playground.onmousemove = (e) => {
+                            console.log(e.pageY)
                             puzzle.move(
-                                e.pageX - (puzzle.getPuzzleElement().offsetWidth + (window.innerWidth - 600)) / 2,
-                                e.pageY - 400 - puzzle.getPuzzleElement().offsetHeight / 2
+                                e.pageX - (window.innerWidth - result.offsetWidth * 2) / 2 - result.offsetWidth - puzzle.getPuzzleElement().offsetWidth / 2,
+                                e.pageY - puzzle.getPuzzleElement().offsetHeight / 2
                             )
                         }
-
-                        playGround.onmouseup = () => {
-                            playGround.onmousemove = null;
+                        playground.onmouseup = () => {
+                            playground.onmousemove = null;
                             puzzle.getPuzzleElement().onmouseup = null;
                             puzzle.getPuzzleElement().style.position = 'static';
                         }
-
                         puzzle.getPuzzleElement().ondragstart = () => {
                             return false;
                         }
                     } else {
-                        return
+                        return;
                     }
                 }
             }
