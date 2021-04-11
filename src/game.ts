@@ -33,7 +33,7 @@ export class Game {
         this.subscribeMovementListeners();
     }
 
-    restart(options: Partial<GameOptions>) {
+    restart(options?: Partial<GameOptions>) {
         this.clear();
         this.options = {
             ...this.options,
