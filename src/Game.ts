@@ -1,27 +1,30 @@
 import { Puzzle } from "./Puzzle";
 import { Cell } from "./Cell";
 
+interface Containers {
+    backlog: HTMLElement;
+    playground: HTMLElement;
+    result: HTMLElement;
+}
+
 interface GameOptions {
-    containers: {
-        playground: HTMLElement;
-        backlog: HTMLElement;
-        result: HTMLElement;
-    };
     sideSize: number;
     imageSrc: string;
+    containers: Containers
 }
 
 export class Game {
     private puzzles: Puzzle[] = [];
     private resultPuzzles: Cell[] = [];
     private options: GameOptions = {
+        sideSize: 0,
+        imageSrc: '',
         containers: {
             backlog: null,
             playground: null,
             result: null
-        },
-        sideSize: 0,
-        imageSrc: ''
+
+        }
     }
 
     constructor(options: GameOptions) {
@@ -37,6 +40,7 @@ export class Game {
 
     restart(options?: Partial<GameOptions>) {
         this.clear();
+        this.options.containers = Game.createContainers();
         this.options = {
             ...this.options,
             ...options
@@ -44,11 +48,40 @@ export class Game {
         this.start();
     }
 
+    private static createContainers(): Containers {
+        const wrapper = document.getElementById('wrapper');
+        const backlog = document.createElement('div');
+        const playground = document.createElement('div');
+        const result = document.createElement('div');
+        backlog.id = 'backlog';
+        backlog.classList.add('result');
+        backlog.classList.add('block');
+        backlog.classList.add('no-border');
+        playground.id = 'playground';
+        playground.classList.add('play-ground');
+        result.id = 'result';
+        result.classList.add('result')
+        result.classList.add('block')
+        wrapper.appendChild(playground);
+        playground.appendChild(result);
+        playground.appendChild(backlog);
+
+        return {
+            backlog, result, playground
+        }
+
+    }
+
     private clear(): void {
         this.puzzles.forEach((item) => item.removeCell());
         this.resultPuzzles.forEach((item) => item.removeCell());
         this.puzzles = [];
         this.resultPuzzles = [];
+        const {playground, result, backlog} = this.options.containers;
+        playground.remove();
+        result.remove();
+        backlog.remove();
+
     }
 
     private createGrid(): void {
@@ -75,14 +108,14 @@ export class Game {
     }
 
     private appendPuzzles(): void {
-        const {containers, sideSize} = this.options;
-        containers.backlog.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
-        containers.result.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
+        const {sideSize} = this.options;
+        this.options.containers.backlog.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
+        this.options.containers.result.style.gridTemplateColumns = `repeat(${sideSize}, 1fr)`;
         this.puzzles.forEach((item) => {
-            containers.backlog.appendChild(item.getCell())
+            this.options.containers.backlog.appendChild(item.getCell())
         })
         this.resultPuzzles.forEach((cell) => {
-            containers.result.appendChild(cell.getCell());
+            this.options.containers.result.appendChild(cell.getCell());
         })
     }
 
@@ -120,7 +153,6 @@ export class Game {
                             const y = e.pageY - puzzle.getPuzzleElement().offsetHeight / 2
                             puzzle.move(x, y)
                             playground.onmouseup = () => {
-                                this.puzzles.forEach((item) => console.log(item.getCell()))
                                 if (this.isInResultBlock(x, y)) {
                                     puzzle.getPuzzleElement().style.position = 'static';
                                     this.resultPuzzles[puzzle.getPosition()].appendToCell(puzzle.getPuzzleElement());
@@ -129,7 +161,7 @@ export class Game {
                                     if (this.puzzles.length === 0) {
                                         setTimeout(() => {
                                             if (window.confirm("Game over")) {
-                                                this.clear()
+                                                this.restart()
                                             }
                                         }, 500)
                                     }

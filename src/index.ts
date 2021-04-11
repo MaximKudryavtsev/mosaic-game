@@ -29,8 +29,7 @@ function init() {
             sideSize: Number(sideSizeInput.value)
         })
         reset.onclick = () => {
-            sideSizeInput.value = String(initialOptions.sideSize)
-            game.restart(initialOptions);
+            game.restart();
         };
     }
 }
