@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.play-ground {
+    width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+}
+
+.details {
+    width: 800px;
+    height: 600px;
+}
+
+.result {
+    width: 600px;
+    height: 400px;
+}
+
+.block {
+    border: 1px solid black;
+    display: grid;
+    box-sizing: border-box;
+    position: relative;
+    margin: 0 auto;
+}
+
+.item {
+    background-image: url("image.jpg");
+    background-repeat: no-repeat;
+    background-size: 600px 400px;
+    z-index: 5;
+    cursor: grab;
+}
+
+.no-border {
+    border: none !important;
+}
