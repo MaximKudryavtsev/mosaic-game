@@ -1,20 +1,23 @@
-interface PuzzleOptions {
+import { Cell, CellOptions } from "./Cell";
+
+interface PuzzleOptions extends CellOptions {
+    imageSrc: string;
     container: HTMLElement;
     sideSize: number;
     position: number;
-    imageSrc: string;
 }
 
-export class Puzzle {
+export class Puzzle extends Cell {
     private readonly puzzle: HTMLElement;
-    private readonly wrapper: HTMLElement;
+    private readonly position: number;
 
     constructor(options: PuzzleOptions) {
+        super(options);
+        this.position = options.position;
         const width = options.container.offsetWidth / options.sideSize;
         const height = options.container.offsetHeight / options.sideSize;
-        this.wrapper = Puzzle.createBlock(width, height);
-        this.puzzle = Puzzle.createBlock(width, height);
-        this.wrapper.appendChild(this.puzzle);
+        this.puzzle = this.createBlock(width, height);
+        this.appendToCell(this.puzzle);
         this.puzzle.draggable = true;
         this.puzzle.style.backgroundImage = 'url('+ options.imageSrc +')'
         const posY = Math.floor(options.position / options.sideSize);
@@ -22,10 +25,6 @@ export class Puzzle {
         this.puzzle.style.backgroundPositionX = '-' + width * posX + 'px';
         this.puzzle.style.backgroundPositionY = '-' + height * posY + 'px';
         this.puzzle.classList.add("item");
-    }
-
-    getElement(): HTMLElement {
-        return this.wrapper;
     }
 
     getPuzzleElement(): HTMLElement {
@@ -37,19 +36,15 @@ export class Puzzle {
         this.puzzle.style.top = y + 'px';
     }
 
+    disableDraggable(): void {
+        this.puzzle.draggable = false;
+    }
+
+    getPosition(): number {
+        return this.position;
+    }
+
     removePuzzle(): void {
         this.puzzle.remove();
-    }
-
-    removeCell(): void {
-        this.wrapper.remove();
-    }
-
-    private static createBlock(width: number, height: number): HTMLElement {
-        const block = document.createElement('div');
-        block.style.width = width + 'px';
-        block.style.height = height + 'px';
-
-        return block;
     }
 }

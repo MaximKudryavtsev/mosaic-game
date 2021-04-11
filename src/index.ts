@@ -1,4 +1,4 @@
-import { Game } from "./game";
+import { Game } from "./Game";
 import { Images } from "./Images";
 
 const imagesSrc = require('../public/images.json');
@@ -29,8 +29,8 @@ function init() {
             sideSize: Number(sideSizeInput.value)
         })
         reset.onclick = () => {
-            game.restart(initialOptions);
             sideSizeInput.value = String(initialOptions.sideSize)
+            game.restart(initialOptions);
         };
     }
 }
