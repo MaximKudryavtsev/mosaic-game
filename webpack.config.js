@@ -30,7 +30,6 @@ module.exports = {
         port: 9000,
         open: true
     },
-    watch: true,
     watchOptions: {
         ignored: /node_modules/,
     },
