@@ -43,8 +43,4 @@ export class Puzzle extends Cell {
     getPosition(): number {
         return this.position;
     }
-
-    removePuzzle(): void {
-        this.puzzle.remove();
-    }
 }

@@ -23,7 +23,6 @@ export class Game {
             backlog: null,
             playground: null,
             result: null
-
         }
     }
 
@@ -69,7 +68,6 @@ export class Game {
         return {
             backlog, result, playground
         }
-
     }
 
     private clear(): void {
@@ -81,7 +79,6 @@ export class Game {
         playground.remove();
         result.remove();
         backlog.remove();
-
     }
 
     private createGrid(): void {
@@ -128,13 +125,19 @@ export class Game {
             array[currentIndex] = array[randomIndex];
             array[randomIndex] = temporaryValue;
         }
-
         return array
     }
 
-    private isInResultBlock(x: number, y: number): boolean {
+    private isPositionMatched(x: number, y: number, position: number): boolean {
+        const { sideSize } = this.options;
         const coords = this.options.containers.result.getBoundingClientRect();
-        return coords.x <= -x + coords.x && coords.x + coords.width >= -x + coords.x && y >= coords.y && y <= coords.y + coords.height;
+        const puzzle = this.puzzles[0];
+        const puzzleWidth = puzzle.getPuzzleElement().offsetWidth;
+        const puzzleHeight = puzzle.getPuzzleElement().offsetHeight;
+        const posY = Math.floor(position / sideSize);
+        const posX = position % sideSize;
+        return x + coords.x + coords.width >= coords.x + posX * puzzleWidth - 10 && x + coords.x + coords.width <= coords.x + posX * puzzleWidth + puzzleWidth + 10
+            && y + coords.y >= coords.y + posY * puzzleHeight - 10 && y + coords.y <= coords.y + posY * puzzleHeight + puzzleHeight + 10;
     }
 
     private removePuzzle(position: number): void {
@@ -143,7 +146,7 @@ export class Game {
 
     private subscribeMovementListeners() {
         const {playground, result} = this.options.containers;
-        this.puzzles.forEach((puzzle, index) => {
+        this.puzzles.forEach((puzzle) => {
                 puzzle.getPuzzleElement().onmousedown = () => {
                     if (puzzle.getPuzzleElement().draggable) {
                         puzzle.getPuzzleElement().style.position = 'absolute';
@@ -152,8 +155,9 @@ export class Game {
                             const x = e.pageX - (window.innerWidth - result.offsetWidth * 2) / 2 - result.offsetWidth - puzzle.getPuzzleElement().offsetWidth / 2;
                             const y = e.pageY - puzzle.getPuzzleElement().offsetHeight / 2
                             puzzle.move(x, y)
+                            this.isPositionMatched(x, y, puzzle.getPosition());
                             playground.onmouseup = () => {
-                                if (this.isInResultBlock(x, y)) {
+                                if (this.isPositionMatched(x, y, puzzle.getPosition())) {
                                     puzzle.getPuzzleElement().style.position = 'static';
                                     this.resultPuzzles[puzzle.getPosition()].appendToCell(puzzle.getPuzzleElement());
                                     puzzle.disableDraggable();
