@@ -2,6 +2,7 @@ import { Game } from "./Game";
 import { Images } from "./Images";
 
 const imagesSrc = require('../public/images.json');
+const MAX_SIDE_SIZE = 25;
 
 function init() {
     const backlog = document.getElementById("backlog");
@@ -25,9 +26,16 @@ function init() {
         images.subscribeListeners(src => game.restart({
             imageSrc: src
         }));
-        submit.onclick = () => game.restart({
-            sideSize: Number(sideSizeInput.value)
-        })
+        submit.onclick = () => {
+            const sideSize = Number(sideSizeInput.value)
+            if (sideSize <= MAX_SIDE_SIZE) {
+                game.restart({
+                    sideSize
+                })
+            } else {
+                alert('Максимальный размер сетки не должен превышать 25!')
+            }
+        }
         reset.onclick = () => {
             game.restart();
         };
