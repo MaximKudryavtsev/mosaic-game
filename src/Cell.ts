@@ -2,6 +2,7 @@ export interface CellOptions {
     container: HTMLElement;
     sideSize: number;
     position: number;
+    className?: string;
 }
 
 export class Cell {
@@ -11,6 +12,9 @@ export class Cell {
         const width = options.container.offsetWidth / options.sideSize;
         const height = options.container.offsetHeight / options.sideSize;
         this.cell = this.createBlock(width, height);
+        if (options.className) {
+            this.cell.classList.add(options.className)
+        }
     }
 
     protected createBlock(width: number, height: number): HTMLElement {

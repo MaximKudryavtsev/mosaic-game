@@ -5,7 +5,7 @@
 
 .wrapper {
     width: 1200px;
-    margin: 0 auto;
+    margin: 20px auto;
 }
 
 .images {
@@ -69,4 +69,10 @@
 
 .no-border {
     border: none !important;
+}
+
+.cell {
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    box-sizing: border-box;
 }

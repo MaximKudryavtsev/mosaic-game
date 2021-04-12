@@ -13,6 +13,9 @@ interface GameOptions {
     containers: Containers
 }
 
+const TOP_OFFSET = 20;
+const CELL_OFFSET = 10;
+
 export class Game {
     private puzzles: Puzzle[] = [];
     private resultPuzzles: Cell[] = [];
@@ -95,7 +98,8 @@ export class Game {
                 const cell = new Cell({
                     container: this.options.containers.result,
                     sideSize: this.options.sideSize,
-                    position
+                    position,
+                    className: 'cell'
                 })
                 this.puzzles.push(puzzle);
                 this.resultPuzzles.push(cell);
@@ -129,15 +133,17 @@ export class Game {
     }
 
     private isPositionMatched(x: number, y: number, position: number): boolean {
-        const { sideSize } = this.options;
+        const {sideSize} = this.options;
         const coords = this.options.containers.result.getBoundingClientRect();
         const puzzle = this.puzzles[0];
         const puzzleWidth = puzzle.getPuzzleElement().offsetWidth;
         const puzzleHeight = puzzle.getPuzzleElement().offsetHeight;
         const posY = Math.floor(position / sideSize);
         const posX = position % sideSize;
-        return x + coords.x + coords.width >= coords.x + posX * puzzleWidth - 10 && x + coords.x + coords.width <= coords.x + posX * puzzleWidth + puzzleWidth + 10
-            && y + coords.y >= coords.y + posY * puzzleHeight - 10 && y + coords.y <= coords.y + posY * puzzleHeight + puzzleHeight + 10;
+        return x + coords.x + coords.width >= coords.x + posX * puzzleWidth - CELL_OFFSET
+            && x + coords.x + coords.width <= coords.x + posX * puzzleWidth + puzzleWidth + CELL_OFFSET
+            && y + coords.y >= coords.y + posY * puzzleHeight - CELL_OFFSET
+            && y + coords.y <= coords.y + posY * puzzleHeight + puzzleHeight + CELL_OFFSET;
     }
 
     private removePuzzle(position: number): void {
@@ -152,8 +158,9 @@ export class Game {
                         puzzle.getPuzzleElement().style.position = 'absolute';
                         puzzle.getPuzzleElement().style.zIndex = '10';
                         playground.onmousemove = (e) => {
-                            const x = e.pageX - (window.innerWidth - result.offsetWidth * 2) / 2 - result.offsetWidth - puzzle.getPuzzleElement().offsetWidth / 2;
-                            const y = e.pageY - puzzle.getPuzzleElement().offsetHeight / 2
+                            const x = e.pageX - (window.innerWidth - result.offsetWidth * 2) / 2
+                                - result.offsetWidth - puzzle.getPuzzleElement().offsetWidth / 2;
+                            const y = e.pageY - puzzle.getPuzzleElement().offsetHeight / 2 - TOP_OFFSET
                             puzzle.move(x, y)
                             this.isPositionMatched(x, y, puzzle.getPosition());
                             playground.onmouseup = () => {
